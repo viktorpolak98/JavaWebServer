@@ -52,6 +52,10 @@ public class Server {
                         routes.get(error);
     }
 
+    private boolean fileExists(String requestedFile){
+        return routes.containsKey(requestedFile) || requestedFile.equals("");
+    }
+
     /**
      * Returns a file as an array of bytes
      * @param file file to return as bytes
@@ -143,10 +147,16 @@ public class Server {
                 fileRequested = parse.nextToken().toLowerCase().substring(1); //requested file. begin from index 1 to get rid of "/"
 
                 if (method.equals("GET")){
+
                     File file = getFile(fileRequested);
                     byte[] data = getFileData(file);
 
-                    pw.println("HTTP/1.1 200 OK");
+                    if (fileExists(fileRequested)){
+                        pw.println("HTTP/1.1 200 OK");
+                    } else {
+                        pw.println("HTTP/1.1 404 File not found");
+                    }
+
                     pw.println(); // blank line between headers and content, very important !
                     pw.flush(); // flush character output stream buffer
 
