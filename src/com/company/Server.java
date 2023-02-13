@@ -52,8 +52,27 @@ public class Server {
                         routes.get(error);
     }
 
+    /**
+     * returns true if the requested file exists or if the requested file is "" (index)
+     * used to check what HTTP response message to send
+     * @param requestedFile
+     * @return
+     */
     private boolean fileExists(String requestedFile){
         return routes.containsKey(requestedFile) || requestedFile.equals("");
+    }
+
+    /**
+     * returns the correct HTTP response based on if the requested file exists or not
+     * @param requestedFile
+     * @return
+     */
+    private String httpResponse(String requestedFile){
+        if (fileExists(requestedFile)) {
+            return "HTTP/1.1 200 OK";
+        }
+
+        return "HTTP/1.1 404 File not found";
     }
 
     /**
@@ -151,12 +170,7 @@ public class Server {
                     File file = getFile(fileRequested);
                     byte[] data = getFileData(file);
 
-                    if (fileExists(fileRequested)){
-                        pw.println("HTTP/1.1 200 OK");
-                    } else {
-                        pw.println("HTTP/1.1 404 File not found");
-                    }
-
+                    pw.println(httpResponse(fileRequested));
                     pw.println(); // blank line between headers and content, very important !
                     pw.flush(); // flush character output stream buffer
 
